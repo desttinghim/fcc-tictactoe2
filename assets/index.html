@@ -11,13 +11,33 @@
             body {
                 padding: 0;
                 margin: 0;
-                background-color: #111111;
+                /*background-color: #111111;*/
             }
 
             #app {
                 display: block;
                 position: relative;
                 margin: 2em auto 0 auto;
+            }
+
+            .tictactoe {
+                width: 480px;
+                height: 480px;
+                background-image: url('grid.png');
+            }
+
+            .piece {
+                display: inline-block;
+                width: 160px;
+                height: 160px;
+            }
+
+            .cross {
+                background-image: url('cross.png');
+            }
+
+            .knot {
+                background-image: url('knot.png');
             }
         </style>
 
@@ -26,8 +46,6 @@
     </head>
 
     <body>
-
-        <div id="tictactoe" class="app"></dib>
 
         <script type="text/javascript" src="main.js"></script>
 

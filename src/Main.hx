@@ -14,14 +14,27 @@ class Main {
 
 class TicTacToe implements Mithril {
 
-    var board : Array<Piece>;
+    var board : Array<Place>;
 
     public function new() {
-        this.board = [for (i in 0...9) E];
+        this.board = [for (i in 0...9) new Place(E)];
     }
 
     public function view() [
-        for (i in board) m('.place', i)
+        m('.tictactoe#app', [for (i in board) m(i)]),
     ];
 
+}
+
+class Place implements Mithril{
+    var piece : Piece;
+    public function new(piece) {
+        this.piece = piece;
+    }
+    public function view() [
+        m('.piece.$piece', {onclick: change}),
+    ];
+    public function change() {
+        piece = X;
+    }
 }
