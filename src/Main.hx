@@ -43,8 +43,8 @@ class TicTacToe implements Mithril {
         m('#app', [
             currentPiece == E
             ? m(choose)
-            : m('.tictactoe', m(board)),
-            isGameOver ? m(line) : []
+            : m('.tictactoe', m(board),
+            isGameOver ? m(line) : [])
     ])];
 
     public function placePiece(index) {
@@ -102,10 +102,12 @@ class TicTacToe implements Mithril {
 class Choose implements Mithril {
     var t : TicTacToe;
     public function new(t) {this.t = t;}
+    function setX() {t.setPlayerPiece(X);}
+    function setO() {t.setPlayerPiece(O);}
     public function view() [
         m('.choose', [
-            m('.piece.$X', {onclick: function() t.setPlayerPiece(X)}),
-            m('.piece.$O', {onclick: function() t.setPlayerPiece(O)}),])
+            m('.piece.$X', {ontouch: setX, onclick: setX }),
+            m('.piece.$O', {ontouch: setO, onclick: setO}),])
     ];
 }
 
@@ -129,7 +131,7 @@ class Place implements Mithril{
         this.index = index;
     }
     public function view() [
-        m('.piece.${t.vboard[index]}', {onclick: change}),
+        m('.piece.${t.vboard[index]}', {ontouch: change, onclick: change}),
     ];
     public function change() {
         if (t.vboard[index] != E) return;
