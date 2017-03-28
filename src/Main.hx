@@ -15,12 +15,15 @@ class Main {
 class TicTacToe implements Mithril {
 
     public var currentPiece : Piece;
+    var playerPiece : Piece;
     var board : Array<Place>;
+    public var vboard : Array<Piece>;
     var choose : Choose;
 
     public function new() {
         this.choose = new Choose(this);
-        this.board = [for (i in 0...9) new Place(this, E)];
+        this.vboard = [for (i in 0...9) E];
+        this.board = [for (i in 0...9) new Place(this, i)];
         currentPiece = E;
     }
 
@@ -31,6 +34,20 @@ class TicTacToe implements Mithril {
                 : m('.tictactoe', [for (i in board) m(i)])),
     ];
 
+    public function placePiece(index) {
+        vboard[index] = currentPiece;
+        currentPiece = currentPiece == X ? O : X;
+    }
+
+    public function getAiTurn() {
+        return vboard.indexOf(E);
+    }
+
+    public function setPlayerPiece(piece) {
+        currentPiece = piece;
+        playerPiece = piece;
+    }
+
 }
 
 class Choose implements Mithril {
@@ -38,23 +55,24 @@ class Choose implements Mithril {
     public function new(t) {this.t = t;}
     public function view() [
         m('.choose', [
-            m('.piece.$X', {onclick: function() t.currentPiece = X}),
-            m('.piece.$O', {onclick: function() t.currentPiece = O}),])
+            m('.piece.$X', {onclick: function() t.setPlayerPiece(X)}),
+            m('.piece.$O', {onclick: function() t.setPlayerPiece(O)}),])
     ];
 }
 
 class Place implements Mithril{
     var t : TicTacToe;
-    var piece : Piece;
-    public function new(t, piece) {
+    var index : Int;
+    public function new(t, index) {
         this.t = t;
-        this.piece = piece;
+        this.index = index;
     }
     public function view() [
-        m('.piece.$piece', {onclick: change}),
+        m('.piece.${t.vboard[index]}', {onclick: change}),
     ];
     public function change() {
-        piece = t.currentPiece;
-        t.currentPiece = t.currentPiece == X ? O : X;
+        if (t.vboard[index] != E) return;
+        t.placePiece(index);
+        t.placePiece(t.getAiTurn());
     }
 }
