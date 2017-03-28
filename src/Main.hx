@@ -2,6 +2,8 @@ import js.Browser;
 import js.html.Element;
 import mithril.M;
 
+using Lambda;
+
 class Main {
     static function main() {M.mount(Browser.document.body, new TicTacToe());}
 }
@@ -15,28 +17,44 @@ class Main {
 class TicTacToe implements Mithril {
 
     public var currentPiece : Piece;
-    var playerPiece : Piece;
+    var playerPiece : Piece = E;
     var board : Array<Place>;
     public var vboard : Array<Piece>;
     var choose : Choose;
+    var isGameOver : Bool;
 
     public function new() {
-        this.choose = new Choose(this);
-        this.vboard = [for (i in 0...9) E];
-        this.board = [for (i in 0...9) new Place(this, i)];
+        reset();
         currentPiece = E;
+    }
+
+    public function reset() {
+        vboard = [for (i in 0...9) E];
+        board = [for (i in 0...9) new Place(this, i)];
+        choose = new Choose(this);
+        isGameOver = false;
+        M.redraw();
+        currentPiece = playerPiece;
     }
 
     public function view() [
         m('#app',
             currentPiece == E ?
                 m(choose)
-                : m('.tictactoe', [for (i in board) m(i)])),
+                : m('.tictactoe', [for (place in board) m(place)])),
     ];
 
     public function placePiece(index) {
+        if (isGameOver) return;
         vboard[index] = currentPiece;
+        var state = checkWon(currentPiece);
+        if (state.win) {gameOver(state.on);}
         currentPiece = currentPiece == X ? O : X;
+    }
+
+    public function gameOver(on) {
+        isGameOver = true;
+        haxe.Timer.delay(reset, 500);
     }
 
     public function getAiTurn() {
@@ -46,6 +64,32 @@ class TicTacToe implements Mithril {
     public function setPlayerPiece(piece) {
         currentPiece = piece;
         playerPiece = piece;
+    }
+
+    // Array of all the different winning combos
+    var wins = [
+    [true, true, true, false, false, false, false, false, false,],
+    [false, false, false,true, true, true,false, false, false,],
+    [false, false, false,false, false, false,true, true, true,],
+    [true, false, false,true, false, false,true, false, false,],
+    [false, true, false,false, true, false,false, true, false,],
+    [false, false, true,false, false, true,false, false, true,],
+    [true, false, false,false, true, false,false, false, true,],
+    [false, false, true,false, true, false,true, false, false,],];
+
+    function checkWon(piece) {
+
+        var boardState = vboard.map(function(item) {return item == piece;});
+
+        for (a in 0...wins.length) {
+            var arr = wins[a];
+            var acc = true;
+            for (i in 0...arr.length) {
+                if (acc && arr[i] && !boardState[i]) acc = false;
+            }
+            if (acc) return {win: true, on: a};
+        }
+        return {win: false, on: -1};
     }
 
 }
