@@ -45,6 +45,22 @@
             .knot {
                 background-image: url('knot.png');
             }
+
+            .line {
+                background-image: url('line.png');
+                width: 480px;
+                height: 160px;
+                position: absolute;
+                transform-origin: center;
+                transform: translateY(-480px);
+            }
+
+            .line.l0 {transform: translateY(-480px);}
+            .line.l1 {transform: translateY(-320px);}
+            .line.l2 {transform: translateY(-160px);}
+            .line.l3 {transform: translateY(-320px) translateX(-160px) rotate(90deg);}
+            .line.l4 {transform: translateY(-320px) rotate(90deg);}
+            .line.l5 {transform: translateY(-320px) translateX(160px) rotate(90deg);}
         </style>
 
         <script src="https://unpkg.com/mithril@1.0.0/mithril.js"></script>

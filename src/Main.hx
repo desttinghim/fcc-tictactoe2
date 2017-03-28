@@ -18,10 +18,11 @@ class TicTacToe implements Mithril {
 
     public var currentPiece : Piece;
     var playerPiece : Piece = E;
-    var board : Array<Place>;
+    var board : Board;
     public var vboard : Array<Piece>;
     var choose : Choose;
     var isGameOver : Bool;
+    var line : Line;
 
     public function new() {
         reset();
@@ -29,8 +30,9 @@ class TicTacToe implements Mithril {
     }
 
     public function reset() {
+        line = new Line(-1);
         vboard = [for (i in 0...9) E];
-        board = [for (i in 0...9) new Place(this, i)];
+        board = new Board(this);
         choose = new Choose(this);
         isGameOver = false;
         M.redraw();
@@ -38,11 +40,12 @@ class TicTacToe implements Mithril {
     }
 
     public function view() [
-        m('#app',
-            currentPiece == E ?
-                m(choose)
-                : m('.tictactoe', [for (place in board) m(place)])),
-    ];
+        m('#app', [
+            currentPiece == E
+            ? m(choose)
+            : m('.tictactoe', m(board)),
+            isGameOver ? m(line) : []
+    ])];
 
     public function placePiece(index) {
         if (isGameOver) return;
@@ -54,7 +57,9 @@ class TicTacToe implements Mithril {
 
     public function gameOver(on) {
         isGameOver = true;
-        haxe.Timer.delay(reset, 500);
+        line = new Line(on);
+        M.redraw();
+        haxe.Timer.delay(reset, 1000);
     }
 
     public function getAiTurn() {
@@ -104,6 +109,18 @@ class Choose implements Mithril {
     ];
 }
 
+class Board implements Mithril {
+    var t : TicTacToe;
+    var places : Array<Place>;
+    public function new(t) {
+        this.t = t;
+        places = [for (index in 0...t.vboard.length) new Place(t, index)];
+    }
+    public function view() [
+    for(place in places) m(place)
+    ];
+}
+
 class Place implements Mithril{
     var t : TicTacToe;
     var index : Int;
@@ -119,4 +136,15 @@ class Place implements Mithril{
         t.placePiece(index);
         t.placePiece(t.getAiTurn());
     }
+}
+
+
+class Line implements Mithril {
+    var index : Int;
+    public function new(index) {
+        this.index = index;
+    }
+    public function view() [
+        m('.line.l$index')
+    ];
 }
